@@ -1,0 +1,67 @@
+# PAL16L8
+3F
+12 19 13 14 15 16 17 18. set=output
+00111111
+
+1 ~WR       20 VCC
+2 ~RD       19 DB12
+3 BA7       18 ~CONFIG_DONE
+4 BA6       17 ~REG_RESET
+5 BA5       16 U7_LE
+6 BA4       15 CARD_EN
+7 BA3       14 DB13
+8 BA2       13 DB14
+9 BA1       12 DB15
+10 gnd      11 ~RSTIN
+
+000000 1101
+000001 0001
+000010 1110
+000011 1110
+000100 1111
+000101 1111
+000110 1111
+000111 1111
+001000 1111
+001001 1100
+001010 0001
+001011 0001
+001100 1111
+001101 1111
+001110 1111
+001111 1111
+
+Looks like the data outputs map to the address inputs A6:A1.
+DB12 = (!BA6 & !BA5 & BA4 & !BA3 & !BA2 & BA1) | (!BA6&!BA5&!BA4&!BA3&BA2) | (BA6&!BA5&!BA4&!BA3&!BA2)
+DB13 = (!BA6 & BA5 & !BA4 & BA3 & BA2 & !BA1) | (!BA6&!BA5&BA4&!BA3&!BA2&BA1) | (!BA6&!BA5&BA4&!BA3&BA2) | (!BA5&!BA4&!BA3&!BA2)
+DB14 = (!BA6 & !BA5 & BA4 & !BA3 & BA2) | (!BA5&!BA4&!BA3&!BA2&BA1) | (BA6&!BA5&!BA4&!BA3&!BA2) 
+DB15 = (!BA6 & !BA5 & BA4 & !BA3 & BA2) | (!BA5&!BA4&!BA3&!BA2&BA1) | (BA6&!BA5&!BA4&!BA3&!BA2)
+
+DB Outputs are active only during a RD when BA7 is low.
+DB12oe = (!~RD & !BA7)
+DB15oe = (!~RD & !BA7)
+DB13oe = (!~RD & !BA7) 
+DB14oe = (!~RD & !BA7) 
+
+Simple buffered reset output.
+~REG_RESET = (!~RSTIN)
+
+The following seem to be control bits that can be set from software but only cleared during reset.
+
+Latched config output activated not during a write when U7_LE is not active. This goes low when our card has finished
+the autoconfig process and has a new address.
+~CONFIG_DONE = (~WR & ~RSTIN & !fU7_LE) | (~RSTIN & !f~CONFIG_DONE)
+
+Latched outputs active when BA=01001x0 during a write. This stores our card address config.
+U7_LE = (!~WR & !BA7&BA6&!BA5&!BA4&BA3&!BA1&~RSTIN) | (~RSTIN & !fU7_LE)
+
+Latched outputs active when BA=0100110 during a write with CONFIG_DONE high (config not done yet)
+CARD_EN =  (!~WR & !BA7&BA6&!BA5&!BA4&BA3&BA2&!BA1&~RSTIN&f~CONFIG_DONE) | (~RSTIN & !fCARD_EN)
+
+
+
+Outputs below are always active
+~CONFIG_DONEoe = ();
+~REG_RESEToe = ();
+U7_LEoe = ();
+CARD_ENoe = ();

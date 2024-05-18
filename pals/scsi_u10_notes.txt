@@ -1,0 +1,64 @@
+# PAL16L8
+
+1 ~R/W      20 VCC
+2 ~LDS      19 ~RTC_CS0
+3 ~UDS      18 io18
+4 ~U14_Q    17 ~CREG_CS
+5 ~REG_CE        16 ~RD_OUT
+6 ~CD_SEL_L        15 ~WR_OUT
+7 BA5       14 ~SCSI_DACK
+8 BA6       13 ~SCSI_CS
+9 BA7       12 DB15
+10 gnd      11 unused, tied to gnd
+
+Spurious terms are
+(!f~RD_OUT&!f~WR_OUT) | (!f~SCSI_DACK&!f~SCSI_CS) | (!f~CREG_CS&!f~SCSI_CS) | (!f~CREG_CS&!f~WR_OUT) | (!f~CREG_CS&!f~RD_OUT) | (!f~CREG_CS&!f~SCSI_DACK);
+
+~REG_CE = seems to be the bus strobe
+~CD_SEL_L = seems to be the card enable/configuration request
+
+
+Read strobe output active at: Upper byte of x01xxxx and 0xxxxxx. Lower byte of 11xxxxx, 1x0xxxx, and 110xxxx. 
+~RD_OUT = (!~R/W & !~UDS & !~REG_CE & !~CD_SEL_L & BA5 & !BA6) | 
+          (!~R/W & !~UDS & !~REG_CE & !BA7) |
+          (!~R/W & !~LDS & !~REG_CE & !~CD_SEL_L & BA6 & BA7) |
+          (!~R/W & !~LDS & !~REG_CE & !~CD_SEL_L & !BA5 & BA7) |
+          (!~R/W & !~LDS & !~REG_CE & !BA5 & BA6 & BA7)
+
+Write stobe output active at: Upper byte of 
+~WR_OUT = (~R/W & !~UDS & !~REG_CE & !~CD_SEL_L & BA5) | 
+          (~R/W & !~REG_CE & !~CD_SEL_L & BA6 & BA7) |
+          (~R/W & !~REG_CE & !BA5 & BA6 & BA7) |
+          (~R/W & !~UDS & !~REG_CE & !BA7) | 
+
+Output this only during a full 16-bit read of 100xxxx
+Or whenever the address lines are 111xxxx
+~SCSI_DACK = (!~R/W & !~LDS & !~UDS & !~U14_Q & !~REG_CE & !BA5 & !BA6 & BA7) | 
+             (!~R/W & !~LDS & !~UDS &           !~REG_CE & !BA5 & !BA6 & BA7 & !f~SCSI_DACK) |
+             (!~REG_CE & BA5 & BA6 & BA7)
+The data we output is related to the U14 Q# output? This is a latched SCSI DRQ signal.
+DB15 = (~U14_Q & f~SCSI_DACK) | (~LDS & ~U14_Q)
+
+Our configuration register is located at 100xxxx but in the upper 8 bits.
+~CREG_CS = (~R/W & !~UDS & !~REG_CE & !BA5 & !BA6 & BA7)
+
+Our SCSI chip is located at 110xxxx.
+~SCSI_CS = (!~REG_CE&!BA5&BA6&BA7)
+
+Our RTC chip is located at 101xxxx.
+~RTC_CS0 = (!~REG_CE&BA5&!BA6&BA7)
+
+
+
+
+Data output on DB15 only during a read when the UDS is active (upper data strobe) address 100xxxx and ~REG_CE is low.
+DB15oe = (!~R/W & !~UDS & !~REG_CE & !BA5 & !BA6 & BA7)
+
+ These outputs always enabled
+~RTC_CS0oe = ();
+~CREG_CSoe = ();
+~RD_OUToe = ();
+~WR_OUToe = ();
+~SCSI_DACKoe = ();
+~SCSI_CSoe = ();
+

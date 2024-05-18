@@ -1,0 +1,74 @@
+# PAL16L8
+1 ~CONFIG_DONE 20 VCC
+2 ~ADDR_MATCH  19 ~CD_SEL (out)
+3 ~UPS_CD_SEL 18 io18 (unk/unused, use out)
+4 ~CD_SEL_L   17 ~BERR (float or low out)
+5 CARD_EN     16 ~DTACK (in? bidir? float or low out?)
+6 ~R/W        15 ~REG_CE (out)
+7 JMP (low)   14 ~ROM_CE (out)
+8 A15         13 ~CDAC (in)
+9 ~AS         12 ~DB_EN (out)
+10 gnd        11 ROM_REGION (in)
+
+Mystery to solve:
+What drives DTACK?
+What needs CDAC?
+
+By hand I discovered a few terms for DB_EN: (BERR needs to be held high for the read condition ~R/W=0)
+DB_EN = (!~AS & ~R/W & ~CONFIG_DONE & ROM_REGION) |
+        (!~AS & ~R/W & !A15 & ~CONFIG_DONE & !~ADDR_MATCH)
+        (!~AS & ~R/W & A15 & !~CONFIG_DONE & !~ADDR_MATCH & CARD_EN) |
+        (!~AS & !~R/W & !~CD_SEL_L & !A15 & ~CONFIG_DONE & !~ADDR_MATCH & ~BERR) | [could be on CD_SEL?]
+        (!~AS & !~R/W & !~CD_SEL_L & ROM_REGION & ~BERR) |
+        (!~AS & !~R/W & !~CD_SEL_L & !~CONFIG_DONE & !~ADDR_MATCH & ~BERR & CARD_EN & ~UPS_CD_SEL)
+        
+rewriting we get this which seems to match up 100%
+DB_EN = (!~REG_CE & ~R/W) |
+        (!~ROM_CE & ~R/W) |
+        (!~REG_CE & R/W & ~BERR & !~CD_SEL_L) |
+        (!~ROM_CE & R/W & ~BERR & !~CD_SEL_L)
+
+UPS_CD_SEL is latched on the falling edge of CCK. CDAC is 90 degrees out of phase with this clock.
+
+Active when: if JMP low (default), then when address strobe is low and ROM_REGION is high.
+Also active during address strobe low and CFGOUT is active.
+This is essentially when our card is being addressed by the host.
+~CD_SEL = (!~AS & !JMP &        ROM_REGION) | 
+             (!~AS & ~CONFIG_DONE & ROM_REGION) | 
+             (!~AS & ~CONFIG_DONE & !~ADDR_MATCH) |
+             (!~AS & CARD_EN      & !~ADDR_MATCH) |
+             (!~AS & !~UPS_CD_SEL);
+
+A15=1 is for IO
+A15=0 is for ROM
+An unconfigured card shows up with ROM at F00000-F07FFF and IO/config regs at E80000-E87FFF  and E88000-E8FFFF
+A configured card shows up with
+    (jumper closed) ROM at F00000-F07FFF and IO/config regs at aa8000-aaFFFF.
+    (jumper open) ROM at aa0000-aa7FFF (ROM) and IO/config regs at aa8000-aaFFFF.
+
+Config is done: Active during address strobe, A15=1, ADDR_MATCH active, and CARD_EN=1
+Config in prog: Active during address strobe, (A15=1, ROM_REGION active) or (A15=0 and ADDR_MATCH active).
+~REG_CE = (!~AS &          A15 & !~CONFIG_DONE & !~ADDR_MATCH & CARD_EN) | 
+          (!~AS &         !A15 & ~CONFIG_DONE  & !~ADDR_MATCH)
+          (!~AS &          A15 & ~CONFIG_DONE  & ROM_REGION) | 
+
+Config is done: Active during address strobe, A15=0, ADDR_MATCH active, CARD_EN=1 (and only for read)
+Config in prog: Active during address strobe, A15=0, and in ROM region, only for read
+If jumper is closed (default) then ROM only shows up at F00000 regardless of config status.
+If jumper is open, then ROM shows up at F00000 only during config, then at aa0000 once configured.
+~ROM_CE = (!~AS & !~R/W & !A15 & !~CONFIG_DONE & !~ADDR_MATCH & CARD_EN) | 
+          (!~AS & !~R/W & !A15 & ~CONFIG_DONE  & ROM_REGION)
+          (!~AS & !~R/W & !A15 & !JMP         & ROM_REGION) | 
+
+Bus error triggers during address strobe when:
+~ADDR_MATCH active - our programmed address matches the address on the bus
+~UPS_CD_SEL active - The upstream device's address also matches the address on the bus
+CARD_EN is active - 
+~BERR =   (!~UPS_CD_SEL & !~AS);
+~BERRoe = (!~ADDR_MATCH & !~UPS_CD_SEL & CARD_EN & !~AS);
+
+Outputs always active
+~CD_SELoe = ();
+~REG_CEoe = ();
+~ROM_CEoe = ();
+
