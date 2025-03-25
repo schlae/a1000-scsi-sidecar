@@ -1,0 +1,31 @@
+GAL16V8
+u10
+
+/RW /LDS /UDS /U14Q /REGCE /CDSELL BA5 BA6 BA7 GND
+NC DB15 /SCSICS /SCSIDACK /WROUT /RDOUT /CREGCS IO18 /RTCCS VCC
+
+; Read strobe output active at:
+; Upper byte of x01xxxxx (card selected) and 0xxxxxxx (id string).
+; Lower byte of 11xxxxxx (card sel), 1x0xxxxx (card sel), and 110xxxxx.
+RDOUT = RW*UDS*REGCE*CDSELL*/BA6*BA5 + RW*UDS*REGCE*/BA7 + RW*LDS*REGCE*CDSELL*BA7*BA6 + RW*LDS*REGCE*CDSELL*BA7*/BA5 + RW*LDS*REGCE*BA7*BA6*/BA5
+
+; Write strobe active at:
+; Upper byte of xx1xxxxx (card sel) and 0xxxxxxx
+; Either byte of 11xxxxxx (card sel) and 110xxxxx
+WROUT = /RW*UDS*REGCE*CDSELL*BA5 + /RW*REGCE*CDSELL*BA7*BA6 + /RW*REGCE*BA7*BA6*/BA5 + /RW*UDS*REGCE*/BA7
+
+; Latch SCSI_DRQ# when 16-bit read from 100xxxxx. Also true if accessing 111xxxxx.
+SCSIDACK = RW*LDS*UDS*REGCE*BA7*/BA6*/BA5*U14Q + RW*LDS*UDS*REGCE*BA7*/BA6*/BA5*SCSIDACK + REGCE*BA7*BA6*BA5
+
+; Return SCSIDACK status when reading from upper part of 100xxxxx
+/DB15.T = /U14Q*/SCSIDACK + /LDS*/U14Q
+DB15.E = RW*UDS*REGCE*BA7*/BA6*/BA5
+
+; Config register is upper part of 100xxxxx. (write only)
+CREGCS = /RW*UDS*REGCE*BA7*/BA6*/BA5
+
+; SCSI chip select (read or write) mapped to 110xxxxx
+SCSICS = REGCE*BA7*BA6*/BA5
+
+; RTC chip select (read or write) mapped to 101xxxxx
+RTCCS = REGCE*BA7*/BA6*BA5

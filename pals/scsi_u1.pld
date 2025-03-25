@@ -1,0 +1,35 @@
+GAL16V8
+u1
+
+/CONFIGDONE /ADDRMATCH /UPSCDSEL /CDSELL /SHUTUP /RW JMP A15 /AS GND
+ROMREGION /DBEN CDAC /ROMCE /REGCE /DTACK /BERR nc /CDSEL VCC
+
+; DBEN depends on other outputs--propagation delays on the scope prove it.
+; Depends on BERR during read operations to protect the bus transceivers
+; Writes not allowed to ROM.
+DBEN = REGCE*/RW*AS + REGCE*RW*/BERR*CDSELL*AS + ROMCE*RW*/BERR*CDSELL*AS
+
+; Card is selected if AS asserted and
+; Jumper is set and we are in the ROM region
+; Configuration isn't finished and our address matches or we're in the ROM region
+; We are not shut up and the address matches
+; Upstream card select is asserted, so we have to assert CDSEL to keep the upstream card happy
+CDSEL = AS*/JMP*ROMREGION + AS*/CONFIGDONE*ROMREGION + AS*/CONFIGDONE*ADDRMATCH + AS*/SHUTUP*ADDRMATCH + AS*UPSCDSEL
+
+; Card selected if address strobe and
+; Config is done: A15=1, address match and card is not shut up.
+; Config is not done: A15=0, address match. A15=1, rom region.
+REGCE = AS*A15*CONFIGDONE*ADDRMATCH*/SHUTUP + AS*/A15*/CONFIGDONE*ADDRMATCH + AS*A15*/CONFIGDONE*ROMREGION
+
+; ROM is selected if address strobe, /RW=0, A15=0, and
+; Config is done: Address matches and card is not shut up
+; Config is not done: rom region
+; Jumper is set and rom region
+ROMCE = AS*RW*/A15*CONFIGDONE*ADDRMATCH*/SHUTUP + AS*RW*/A15*/CONFIGDONE*ROMREGION + AS*RW*/A15*/JMP*ROMREGION
+
+; Bus error if AS, address matches, upstream card is selected, card is not shut up.
+BERR.T = VCC
+/BERR.E = ADDRMATCH*UPSCDSEL*/SHUTUP*AS
+
+nc.T = GND
+nc.E = GND

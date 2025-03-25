@@ -1,0 +1,35 @@
+GAL16V8
+u2
+
+/WR /RD BA7 BA6 BA5 BA4 BA3 BA2 BA1 GND
+/RSTIN DB15 DB14 DB13 /SHUTUP /U7LE /REGRESET /CONFIGDONE DB12 VCC
+
+; ID PROM region
+/DB12.T = /BA6*/BA5*BA4*/BA3*/BA2*BA1 + /BA6*/BA5*/BA4*/BA3*BA2 + BA6*/BA5*/BA4*/BA3*/BA2
+/DB13.T = /BA6*BA5*/BA4*BA3*BA2*/BA1 + /BA6*/BA5*BA4*/BA3*/BA2*BA1 + /BA6*/BA5*BA4*/BA3*BA2 + /BA5*/BA4*/BA3*/BA2
+/DB14.T = /BA6*/BA5*BA4*/BA3*BA2 + /BA5*/BA4*/BA3*/BA2*BA1 + BA6*/BA5*/BA4*/BA3*/BA2
+/DB15.T = /BA6*/BA5*BA4*/BA3*BA2 + /BA5*/BA4*/BA3*/BA2*BA1 + BA6*/BA5*/BA4*/BA3*/BA2
+
+; Output PROM contents only when selected
+DB12.E = RD * /BA7
+DB13.E = RD * /BA7
+DB14.E = RD * /BA7
+DB15.E = RD * /BA7
+
+; Simple buffered reset output
+REGRESET = RSTIN
+
+; Configuration Done latch.
+; Set when U7LE asserted and write operation is done
+; Cleared when /RSTIN goes low.
+CONFIGDONE = /WR*/RSTIN*U7LE + /RSTIN*CONFIGDONE
+
+; U7 address latch.
+; Set when write operation occurs to address 01001x0x (0x48, 0x49, 0x4C, 0x4D)
+; Cleared when /RSTIN goes low.
+U7LE = WR*/BA7*BA6*/BA5*/BA4*BA3*/BA1*/RSTIN + /RSTIN*U7LE
+
+; Shut up latch. Causes card to go quiet and never appear on the bus.
+; Set when write operation occurs to address 0100110x (0x4C, 0x4D) and config not complete.
+; Cleared when /RSTIN goes low.
+SHUTUP = WR*/BA7*BA6*/BA5*/BA4*BA3*BA2*/BA1*/RSTIN*/CONFIGDONE + /RSTIN*SHUTUP
