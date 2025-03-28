@@ -103,7 +103,7 @@ from the external hard drive, so I've been using the
 Please note that you need to be using Kickstart 1.3 otherwise the machine
 will just get stuck in a boot loop.
 
-You'll probably want to read the [manual](https://bitsavers.org/pdf/comspec/SA_Series_Professional_SCSI_Host_Adaptor_Preliminary_V0_9F.pdf).
+You'll probably want to read the [manual](https://bitsavers.org/pdf/comspec/SA_Series_Professional_SCSI_Host_Adaptor_Preliminary_V0_9F.pdf), which will show you how to use the [utilities disk](disk/comspec_utilities.adf) to set up a new hard drive.
 
 ## Troubleshooting
 
