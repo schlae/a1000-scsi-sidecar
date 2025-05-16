@@ -72,3 +72,58 @@ Outputs always active
 ~REG_CEoe = ();
 ~ROM_CEoe = ();
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+1 /CONFIGDONE   20 VCC
+2 /ADDRMATCH    19 /CDSEL
+3 /UPSCDSEL     18 nc
+4 /CDSELL       17 /BERR
+5 /CARDEN       16 /DTACK
+6 /RW           15 /REGCE 
+7 JMP           14 /ROMCE 
+8 A15           13 CDAC
+9 /AS           12 /DBEN
+10 GND          11 ROMREGION 
+
+# PAL16L8
+o19 = (!i7&!i9&i11) | (i1&!i9&i11) | (i1&!i2&!i9) | (!i2&i5&!i9) | (!i3
+    &!i9);
+
+o12 = ;
+
+io17 = (!i2&i5&!i9);
+
+io15 = (!i1&!i2&i5&i8&!i9) | (i1&i8&!i9&i11) | (i1&!i2&!i8&!i9);
+
+io14 = (!i1&!i2&i5&!i6&!i8&!i9) | (!i6&!i7&!i8&!i9&i11) | (i1&!i6&!i8&!i9
+    &i11);
+
+o19oe = ();
+
+o12oe = ;
+
+io17oe = (!i2&!i3&i5&!i9);
+
+io15oe = ();
+
+io14oe = ();

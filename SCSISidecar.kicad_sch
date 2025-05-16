@@ -24936,6 +24936,16 @@
 		)
 		(uuid "4a20bd66-61af-4cd0-a709-7e4d71c8b5d6")
 	)
+	(text "DEFAULT\nA (2-3)"
+		(exclude_from_sim no)
+		(at 399.288 213.868 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "565ee746-5a95-4318-b5dd-decd93206c53")
+	)
 	(text "PAL: BUS CONTROL"
 		(exclude_from_sim no)
 		(at 146.05 194.31 0)
@@ -31659,6 +31669,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "4610X-101-103LF"
+			(at 181.61 41.91 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "726485f8-de75-44e5-9f60-0f346df25aaa")
 		)
@@ -32572,11 +32591,12 @@
 			)
 		)
 		(property "Value" "WD33C93"
-			(at 309.626 102.87 0)
+			(at 305.308 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" "Active:DIP254P1524X635-40"
@@ -34085,6 +34105,15 @@
 		)
 		(property "Description" ""
 			(at 245.11 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "4606X-101-102LF"
+			(at 245.11 38.1 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -38986,7 +39015,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "M6264B"
+		(property "Value" "M6242B"
 			(at 46.736 185.674 0)
 			(effects
 				(font
@@ -39013,6 +39042,15 @@
 			)
 		)
 		(property "Description" ""
+			(at 33.02 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "M6242B, RTC-72421, or equivalent"
 			(at 33.02 187.96 0)
 			(effects
 				(font
@@ -39838,7 +39876,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "7101J1AV2QE2 or equiv"
+		(property "MPN" "7101J1AV2QE2, 300SP1J1BLKM7QE, or equiv"
 			(at 22.86 252.73 0)
 			(effects
 				(font
@@ -39914,6 +39952,15 @@
 		)
 		(property "Description" ""
 			(at 245.11 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "4606X-101-102LF"
+			(at 245.11 57.15 90)
 			(effects
 				(font
 					(size 1.27 1.27)

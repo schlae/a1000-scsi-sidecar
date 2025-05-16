@@ -3,6 +3,8 @@
 12 19 13 14 15 16 17 18. set=output
 00111111
 
+Note that for some reason the DuPAL equation outputs should all be inverted.
+
 1 ~WR       20 VCC
 2 ~RD       19 DB12
 3 BA7       18 ~CONFIG_DONE
@@ -65,3 +67,12 @@ Outputs below are always active
 ~REG_RESEToe = ();
 U7_LEoe = ();
 CARD_ENoe = ();
+
+
+
+fio16&!fio15 | !fio17&!fio16 | !fio18&fio16
+
+fio16&(!fio15 | !fio18) | !fio16 & !fio17
+
+U7_LE&(!CARD_EN | !~CONFIG_DONE) | !U7_LE & !~REG_RESET
+

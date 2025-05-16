@@ -7,7 +7,7 @@ Well, wait no longer, because here is a solution. This project is a clone
 of the Comspec SA-1000 product that was available in the 1980s, connecting
 to the Amiga's sidecar bus port and providing a SCSI bus interface.
 
-![The SCSI Sidecar](photos/scsisidecar.jpg)
+![The SCSI Sidecar](photos/scsisidecar2.jpg)
 
 ## Fabrication
 
@@ -67,6 +67,8 @@ to shift the card edge board up or down. Once it's all aligned, solder
 the remaining connections, and then solder the assembly to the main
 SCSI Sidecar board. The card edge board will sit flush with the main board.
 
+![Edge connector sitting flush against the main board](photos/connector.jpg)
+
 ## PAL programming
 
 There are three source files located in the `pal` directory.
@@ -86,7 +88,7 @@ from National Semiconductor.
 
 ## EPROM programming
 
-The boot PROMs are 27C128 devices, which you can also program using the TL-866.
+The boot PROMs are 27C128 devices, which you can also program using the TL-866. Use 200ns or faster devices.
 
 ## Testing and using
 
@@ -127,7 +129,9 @@ The boot ROMs will blink the screen red if they detect an error:
 
 ### SCSI controller
 
-The SCSI controller is a fairly standard WD33C93 (plain, not the A suffix).
+The SCSI controller is a fairly standard WD33C93 (plain or the A suffix).
+Note that some versions may work better than others since there are multiple
+versions of the embedded firmware.
 
 DRQ (Data Request) status of the SCSI controller is monitored by the Amiga
 by reading a status register. It can also be configured to trigger an
