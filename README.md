@@ -1,7 +1,5 @@
 # Amiga SCSI Sidecar
 
-**Alpha version: the PC board has not been fabricated or tested!**
-
 Do you have an Amiga 1000 and want to connect it to a SCSI hard drive?
 Well, wait no longer, because here is a solution. This project is a clone
 of the Comspec SA-1000 product that was available in the 1980s, connecting
@@ -25,6 +23,9 @@ at positions U4 and U5.
 
 You may want to substitute a different rear-panel switch for the C&K part
 to save a little money.
+
+The RTC chip is a M6242B in the original but apparently an RTC-72421 will
+also work (not tested). 
 
 The 86-pin edge connector should be soldered to the back of the PCB (solder
 side) since it plugs into the side of the Amiga 1000. You may need to find
@@ -68,6 +69,7 @@ the remaining connections, and then solder the assembly to the main
 SCSI Sidecar board. The card edge board will sit flush with the main board.
 
 ![Edge connector sitting flush against the main board](photos/connector.jpg)
+
 
 ## PAL programming
 
